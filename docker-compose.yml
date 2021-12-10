@@ -1,0 +1,30 @@
+version: '3.3'
+
+networks:
+  slack:
+
+services:
+  bolt:
+    build: .
+    container_name: bolt
+    ports:
+      - 3000:3000
+    volumes:
+      - ./app:/app
+    tty: true
+    env_file:
+      - ./app/.env
+    networks:
+      - slack
+
+  ngrok:
+    image: wernight/ngrok:latest
+    ports:
+      - 3001:4040
+    environment:
+      NGROK_PROTOCOL: http
+      NGROK_PORT: bolt:3000
+    depends_on:
+      - bolt
+    networks:
+      - slack
